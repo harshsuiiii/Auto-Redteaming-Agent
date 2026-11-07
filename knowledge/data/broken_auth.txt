@@ -1,0 +1,7 @@
+# Broken authentication / JWT attacks
+Forge a JWT with header alg:none and an empty signature to impersonate another user
+Set alg:none and change the data.id/email claim to an admin account
+JWT algorithm confusion: sign an RS256 token with the public key as an HMAC (HS256) secret
+Reuse an expired or logged-out token on a protected endpoint
+Manipulate the kid header to point at a predictable key file
+Strip or tamper with the signature and check if the server still accepts the token

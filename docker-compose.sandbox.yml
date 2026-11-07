@@ -1,0 +1,48 @@
+# Isolated sandbox for AutoRedTeam targets (05_SANDBOX_SETUP.md).
+#
+# Isolation model
+# ---------------
+# * `redteam-isolated` is `internal: true` — containers on it have NO route to the
+#   public internet (safety + prompt-injection containment). Docker also refuses to
+#   publish host ports on an internal network, so the target is unreachable from the
+#   host directly — which is exactly what we want for the TARGET.
+# * The target (juice-shop) is attached ONLY to that isolated network. It cannot
+#   egress, and no unrelated host can reach it.
+# * `sandbox-gateway` is a TRUSTED, non-vulnerable socat relay on both the isolated
+#   network and a normal bridge. It publishes port 3000 on LOOPBACK ONLY and forwards
+#   host -> juice-shop. This is the spec's "separate bridge that only the orchestrator
+#   uses to reach into the sandbox network." The target itself still has no egress:
+#   the isolated network has no gateway, so juice-shop has no default route out.
+#
+# Phase 0 done-when: curl http://127.0.0.1:3000 works from the host orchestrator; the
+# target cannot reach the internet; nothing is exposed beyond loopback.
+
+services:
+  juice-shop:
+    image: bkimminich/juice-shop:latest
+    container_name: redteam-juice-shop
+    networks:
+      - redteam-isolated
+    expose:
+      - "3000"
+    restart: "no"
+
+  sandbox-gateway:
+    image: alpine/socat:latest
+    container_name: redteam-gateway
+    command: ["tcp-listen:3000,fork,reuseaddr", "tcp-connect:juice-shop:3000"]
+    depends_on:
+      - juice-shop
+    networks:
+      - redteam-isolated   # reach the internal target
+      - redteam-edge       # carry the host-published loopback port
+    ports:
+      - "127.0.0.1:3000:3000"   # host-loopback only; not exposed to other machines
+    restart: "no"
+
+networks:
+  redteam-isolated:
+    driver: bridge
+    internal: true   # no external gateway — the critical isolation setting
+  redteam-edge:
+    driver: bridge

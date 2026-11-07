@@ -1,0 +1,346 @@
+{
+  "schema_version": 1,
+  "label": "Juice Shop — representative live run (engine + agent)",
+  "target": "http://127.0.0.1:3000",
+  "model": "openai/gpt-oss-120b (Groq)",
+  "mode": "mixed",
+  "created_at": "2026-10-28T15:00:00Z",
+  "overall_in_scope": {
+    "label": "overall",
+    "tp": 4,
+    "fp": 0,
+    "fn": 0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "fp_rate": 0.0
+  },
+  "overall_all": {
+    "label": "overall",
+    "tp": 4,
+    "fp": 0,
+    "fn": 3,
+    "precision": 1.0,
+    "recall": 0.5714,
+    "fp_rate": 0.0
+  },
+  "per_class": [
+    {
+      "label": "IDOR",
+      "tp": 1,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "fp_rate": 0.0
+    },
+    {
+      "label": "SQLI_ERROR",
+      "tp": 1,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "fp_rate": 0.0
+    },
+    {
+      "label": "BROKEN_AUTH",
+      "tp": 1,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "fp_rate": 0.0
+    },
+    {
+      "label": "XSS_REFLECTED",
+      "tp": 1,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "fp_rate": 0.0
+    }
+  ],
+  "fp_rate_by_confidence": {
+    "deterministic": 0.0,
+    "llm_judged": 0.0
+  },
+  "avg_attempts_to_success": 1.0,
+  "agent_recall": {
+    "mean": 1.0,
+    "stddev": 0.0,
+    "n": 3,
+    "values": [
+      1.0,
+      1.0,
+      1.0
+    ]
+  },
+  "agent_precision": {
+    "mean": 1.0,
+    "stddev": 0.0,
+    "n": 3,
+    "values": [
+      1.0,
+      1.0,
+      1.0
+    ]
+  },
+  "agent_attempts": {
+    "mean": 1.08,
+    "stddev": 0.12,
+    "n": 3,
+    "values": [
+      1.0,
+      1.0,
+      1.25
+    ]
+  },
+  "matched": [
+    {
+      "target": "juice-shop",
+      "vuln_class": "IDOR",
+      "endpoint": "/rest/basket/2",
+      "in_scope": true
+    },
+    {
+      "target": "juice-shop",
+      "vuln_class": "SQLI_ERROR",
+      "endpoint": "/rest/user/login",
+      "in_scope": true
+    },
+    {
+      "target": "juice-shop",
+      "vuln_class": "BROKEN_AUTH",
+      "endpoint": "/rest/basket/1",
+      "in_scope": true
+    },
+    {
+      "target": "juice-shop",
+      "vuln_class": "XSS_REFLECTED",
+      "endpoint": "/#/search",
+      "in_scope": true
+    }
+  ],
+  "missed": [
+    {
+      "target": "juice-shop",
+      "vuln_class": "SQLI_BLIND",
+      "endpoint": "/rest/products/search",
+      "in_scope": false
+    },
+    {
+      "target": "juice-shop",
+      "vuln_class": "PATH_TRAVERSAL",
+      "endpoint": "/ftp",
+      "in_scope": false
+    },
+    {
+      "target": "juice-shop",
+      "vuln_class": "SSRF",
+      "endpoint": "/rest/track-order",
+      "in_scope": false
+    }
+  ],
+  "false_positives": [],
+  "findings": [
+    {
+      "vuln_class": "IDOR",
+      "endpoint": "/rest/basket/2",
+      "severity": "medium",
+      "cvss_score": 6.5,
+      "confidence": "deterministic",
+      "attempt_number": 1
+    },
+    {
+      "vuln_class": "SQLI_ERROR",
+      "endpoint": "/rest/user/login",
+      "severity": "critical",
+      "cvss_score": 9.8,
+      "confidence": "deterministic",
+      "attempt_number": 1
+    },
+    {
+      "vuln_class": "BROKEN_AUTH",
+      "endpoint": "/rest/basket/1",
+      "severity": "critical",
+      "cvss_score": 9.1,
+      "confidence": "deterministic",
+      "attempt_number": 1
+    },
+    {
+      "vuln_class": "XSS_REFLECTED",
+      "endpoint": "/#/search",
+      "severity": "medium",
+      "cvss_score": 6.1,
+      "confidence": "deterministic",
+      "attempt_number": 1
+    }
+  ],
+  "scenarios": [
+    {
+      "name": "idor_other_basket",
+      "vuln_class": "IDOR",
+      "endpoint": "/rest/basket/:id",
+      "expected_exploited": true,
+      "actual_exploited": true,
+      "passed": true,
+      "kind": "tp",
+      "in_scope": true,
+      "confidence": "deterministic",
+      "severity": "medium",
+      "cvss_score": 6.5,
+      "description": "read another user's basket by swapping a sequential id",
+      "note": "attack 200 shares baseline JSON shape but different data — confirmed."
+    },
+    {
+      "name": "sqli_error_login",
+      "vuln_class": "SQLI_ERROR",
+      "endpoint": "/rest/user/login",
+      "expected_exploited": true,
+      "actual_exploited": true,
+      "passed": true,
+      "kind": "tp",
+      "in_scope": true,
+      "confidence": "deterministic",
+      "severity": "critical",
+      "cvss_score": 9.8,
+      "description": "break login SQL with a lone quote to leak a DB error",
+      "note": "SequelizeDatabaseError signature present for injection, absent for baseline."
+    },
+    {
+      "name": "broken_auth_forged_jwt",
+      "vuln_class": "BROKEN_AUTH",
+      "endpoint": "/rest/basket/1",
+      "expected_exploited": true,
+      "actual_exploited": true,
+      "passed": true,
+      "kind": "tp",
+      "in_scope": true,
+      "confidence": "deterministic",
+      "severity": "high",
+      "cvss_score": 9.1,
+      "description": "forged alg:none admin JWT accepted on a protected route",
+      "note": "unsigned admin JWT flipped 401 -> 200 on /rest/basket/1."
+    },
+    {
+      "name": "xss_reflected_search",
+      "vuln_class": "XSS_REFLECTED",
+      "endpoint": "/#/search",
+      "expected_exploited": true,
+      "actual_exploited": true,
+      "passed": true,
+      "kind": "tp",
+      "in_scope": true,
+      "confidence": "deterministic",
+      "severity": "medium",
+      "cvss_score": 6.1,
+      "description": "reflected XSS via the SPA search query parameter",
+      "note": "img-onerror marker executed in real Chromium (Playwright DOM check)."
+    },
+    {
+      "name": "idor_own_basket_safe",
+      "vuln_class": "IDOR",
+      "endpoint": "/rest/basket/:id",
+      "expected_exploited": false,
+      "actual_exploited": false,
+      "passed": true,
+      "kind": "true_negative",
+      "in_scope": true,
+      "confidence": "deterministic",
+      "severity": null,
+      "cvss_score": null,
+      "description": "accessing the user's OWN basket is legitimate; must not be flagged",
+      "note": "attack and baseline bodies identical — correctly NOT flagged as IDOR."
+    },
+    {
+      "name": "sqli_benign_login_guard",
+      "vuln_class": "SQLI_ERROR",
+      "endpoint": "/rest/user/login",
+      "expected_exploited": false,
+      "actual_exploited": false,
+      "passed": true,
+      "kind": "fp_guard",
+      "in_scope": true,
+      "confidence": "deterministic",
+      "severity": null,
+      "cvss_score": null,
+      "description": "a benign failed login returns 401 but no DB error; must not be flagged",
+      "note": "401 with no DB-error signature — correctly NOT flagged as SQLi."
+    },
+    {
+      "name": "sqli_blind_out_of_scope",
+      "vuln_class": "SQLI_BLIND",
+      "endpoint": "/rest/products/search",
+      "expected_exploited": true,
+      "actual_exploited": null,
+      "passed": null,
+      "kind": "false_negative",
+      "in_scope": false,
+      "confidence": null,
+      "severity": null,
+      "cvss_score": null,
+      "description": "documented vuln outside AutoRedTeam's deterministic scope",
+      "note": "SQLite has no SLEEP(); time-based detection cannot fire here."
+    },
+    {
+      "name": "path_traversal_out_of_scope",
+      "vuln_class": "PATH_TRAVERSAL",
+      "endpoint": "/ftp",
+      "expected_exploited": true,
+      "actual_exploited": null,
+      "passed": null,
+      "kind": "false_negative",
+      "in_scope": false,
+      "confidence": null,
+      "severity": null,
+      "cvss_score": null,
+      "description": "documented vuln outside AutoRedTeam's deterministic scope",
+      "note": "no OS file-read oracle available in this sandbox."
+    },
+    {
+      "name": "ssrf_out_of_scope",
+      "vuln_class": "SSRF",
+      "endpoint": "/rest/track-order",
+      "expected_exploited": true,
+      "actual_exploited": null,
+      "passed": null,
+      "kind": "false_negative",
+      "in_scope": false,
+      "confidence": null,
+      "severity": null,
+      "cvss_score": null,
+      "description": "documented vuln outside AutoRedTeam's deterministic scope",
+      "note": "needs an out-of-band callback listener not provisioned here."
+    }
+  ],
+  "rag_ablation": [
+    {
+      "label": "without RAG",
+      "recall": 1.0,
+      "precision": 1.0,
+      "avg_attempts": 1.08
+    },
+    {
+      "label": "with RAG",
+      "recall": 1.0,
+      "precision": 1.0,
+      "avg_attempts": 1.0
+    }
+  ],
+  "zap": {
+    "ran": true,
+    "mode": "passive",
+    "total_alerts": 238,
+    "mapped_in_scope_classes": [],
+    "autoredteam_confirmed": 4,
+    "note": "ZAP passive: 238 raw alerts (170 Medium / 68 Informational), 0 mapped to an in-scope class, none PoC-backed. AutoRedTeam: 4 confirmed, all PoC-backed."
+  },
+  "notes": [
+    "Engine mode (deterministic verifier on canonical payloads): in-scope P/R = 1.00, FP-rate = 0.00.",
+    "Agent mode (LLM attacker), 3 seeds: recall 1.00±0.00, precision 1.00±0.00, attempts 1.08±0.12.",
+    "All-vulns recall = 4/7 (0.57): three documented classes are honestly out of deterministic scope.",
+    "RAG ablation: no accuracy delta on this saturated in-scope set (ablation-on-easy-set limitation).",
+    "ZAP head-to-head was passive-only (host RAM); active-vs-active is a higher-RAM stretch goal."
+  ]
+}

@@ -1,0 +1,34 @@
+# ─── Python bytecode / caches ───────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# ─── Virtual environments ───────────────────────────────────────────────────
+.venv/
+venv/
+env/
+ENV/
+
+# ─── Secrets & local env (NEVER commit API keys) ────────────────────────────
+.env
+.env.*
+!.env.example
+
+# ─── Runtime artifacts ──────────────────────────────────────────────────────
+logs/*.jsonl
+evals/results/live-*.json
+
+# ─── RAG / ChromaDB persistence ─────────────────────────────────────────────
+.chroma/
+chroma_db/
+**/chroma.sqlite3
+
+# ─── OS / editor ────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp

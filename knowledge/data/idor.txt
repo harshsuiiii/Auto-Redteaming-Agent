@@ -1,0 +1,7 @@
+# IDOR techniques — one per line (SecLists/PortSwigger style)
+Increment or decrement a numeric object id (e.g. /resource/123 -> /resource/124) while keeping your own auth token
+Swap a UUID/object id for another user's known id in path, query, or body
+Change an id in a JSON body field (userId, accountId, orderId) to another user's value
+Replace your own id in a GET query parameter (?id=, ?user=, ?account=) with a victim's id
+Access /api/<Model>/:id for an id you do not own to read another tenant's record
+Supply another user's id in a header (X-User-Id) the backend trusts without authorization checks
